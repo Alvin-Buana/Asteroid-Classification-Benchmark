@@ -2,7 +2,7 @@ import ml_method as ml
 
 
 def main(): 
-    ml.machine_learning_method()     
+    ml.main_processing()     
     
   
 # __name__ 

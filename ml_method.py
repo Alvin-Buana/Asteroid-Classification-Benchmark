@@ -15,6 +15,7 @@ from sklearn.metrics import roc_auc_score
 
 import time
 import numpy as np
+import pandas as pd 
 
 import preprocessing_data as dt
 
@@ -132,7 +133,7 @@ def catboost(X_train, y_train, X_test, y_test):
     clf.fit(X_train, y_train)
     stop = time.time()
     CB_time=np.round((stop - start)/60, 2)
-    CB_score = clf.score(X_valid, y_valid)
+    # CB_score = clf.score(X_valid, y_valid)
 
     pred = clf.predict(X_test)
     conmat = confusion_matrix(y_test,pred)
@@ -151,7 +152,7 @@ def naive_bayes(X_train, y_train, X_test, y_test):
     clf.fit(X_train, y_train)
     stop = time.time()
     NB_time=np.round((stop - start)/60, 2)
-    NB_score = clf.score(X_valid, y_valid)
+    # NB_score = clf.score(X_valid, y_valid)
 
     pred = clf.predict(X_test)
     conmat = confusion_matrix(y_test,pred)
@@ -162,11 +163,12 @@ def naive_bayes(X_train, y_train, X_test, y_test):
     print('Training time (mins):',NB_time)
     return score, roc_score, NB_time
 
-def machine_learning_method():
-    print('Start to train with ML method')
-    print('Start to read data')
-    X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
-    print('Start to train')
+
+def machine_learning_method(X_train, y_train, X_test, y_test,filename):
+    # print('Start to train with ML method')
+    # print('Start to read data')
+    # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
+    # print('Start to train')
 
     f1_score_lg, roc_score_lg, time_lg =        logistic_regression(X_train, y_train, X_test, y_test)
     f1_score_knn, roc_score_knn, time_knn =     knn(X_train, y_train, X_test, y_test)
@@ -183,4 +185,37 @@ def machine_learning_method():
      'Validation ROC Score': [roc_score_lg,roc_score_knn,roc_score_svc,roc_score_rf,roc_score_lgbm,roc_score_cb,roc_score_nb],  
      'Training time': [time_lg,time_knn,time_svc,time_rf,time_lgbm,time_cb,time_nb],
     })
-    valid_scores.to_csv('ML_methods.csv', index=False)
+    valid_scores.to_csv(filename+'.csv', index=False)
+    
+
+def main_processing():
+    print('Start to train with ML method')
+    print('Start to read data')
+    # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
+    # print('Start to train')
+    # filename = 'ML_boot_methods'
+    # machine_learning_method(X_train, y_train, X_test, y_test,filename)
+    # print("ML methods with boostraping has finished")
+
+    # print("Starting SMOTE method")
+    # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
+    # filename = 'ML_smote_methods'
+    # machine_learning_method(X_train, y_train, X_test, y_test,filename)
+    # print("ML methods with SMOTE has finished")
+
+    print("Starting a new data called : Asteroid data")
+    X_train, y_train, X_test, y_test =dt.read_data_Asteroid()
+    print('Start to train')
+    filename = 'ML_Asteroid_boot_methods'
+    machine_learning_method(X_train, y_train, X_test, y_test,filename)
+    print("ML methods with boostraping has finished")
+
+    # print("Starting SMOTE method")
+    # X_train, y_train, X_test, y_test =dt.read_data_Asteroid_SMOTE()
+    # filename = 'ML_Asteroid_smote_methods'
+    # machine_learning_method(X_train, y_train, X_test, y_test,filename)
+    # print("ML methods with SMOTE has finished")
+
+    print("Done")
+    
+

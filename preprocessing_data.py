@@ -24,30 +24,35 @@ def categorical(data):
     categorical_cols = data.select_dtypes(include='object').columns
     encoder = LabelEncoder()
     for cat in categorical_cols:
-        data[cat] = encoder.transform(data[cat])
+        data[cat] = encoder.fit_transform(data[cat])
+    data['Hazardous'] = encoder.fit_transform(data['Hazardous'])
     return data
 
 
 def data_cleaning(data):
-    data.dropna(axis=0,inplace=True)
+    
     data.drop_duplicates(inplace=True)
     if 'Neo Reference ID' in data.columns:
+        data.dropna(axis=0,inplace=True)
+        
         columns = [ 'Date','Neo Reference ID','Name','Equinox','Close Approach Date','Epoch Date Close Approach', 
                     'Orbit Determination Date','Orbiting Body','Est Dia in KM(max)', 'Est Dia in M(min)', 'Est Dia in M(max)', 
                     'Est Dia in Miles(min)','Est Dia in Miles(max)', 'Est Dia in Feet(min)', 'Est Dia in Feet(max)',
                     'Relative Velocity km per hr', 'Miles per hour', 'Miss Dist.(lunar)','Miss Dist.(kilometers)', 'Miss Dist.(miles)']
         data.drop(columns, axis = 1,inplace=True)
     else:
-        data.rename(columns={"pha":"Harzardous","neo":"is_near_earth"},inplace=True)
+        data.rename(columns={"pha":"Hazardous","neo":"is_near_earth"},inplace=True)
         columns = ['name','prefix','diameter','albedo','diameter_sigma',
                     'id','spkid','pdes','full_name','equinox']
         data.drop(columns, axis = 1,inplace=True)
+        data.dropna(axis=0,inplace=True)
     
     return data
 
 def imbalance_bootstrapping(data, n_samples):
-    data_minority = data[data['Hazardous']==True]
-    data_majority = data[data['Hazardous']==False]
+    data_minority = data[data['Hazardous']=='Y']
+    data_majority = data[data['Hazardous']=='N']
+    # print(data_minority)
     data_minority = resample(data_minority,random_state=42,n_samples=n_samples)
     data_majority = resample(data_majority,random_state=42,n_samples=n_samples)
     data = pd.concat([data_minority,data_majority],axis=0)
@@ -64,7 +69,7 @@ def imbalance_smote(data):
 
 def read_raw_data_Asteroid():
     path = dataset_path + datasets[0]
-    data = pd.read_csv("dataset.csv")
+    data = pd.read_csv(path+"/datasets.csv")
     return data
 def read_raw_data_NeoWS():
     path = dataset_path + datasets[1]
@@ -91,6 +96,21 @@ def read_data_NeoWS():
     y_test = data_test['Hazardous']
     return X_train, y_train, X_test, y_test
 
+def read_data_NeoWS_SMOTE():
+    data = read_raw_data_NeoWS()
+    data = data_cleaning(data)
+    print(data.head())
+    #exit()
+    data = imbalance_smote(data)
+    data = normalization(data)
+    data = categorical(data)
+    data_train,data_test = train_test_split(data, test_size=0.2, random_state=42)
+    X_train = data_train.drop(['Hazardous'],axis=1)
+    y_train = data_train['Hazardous']
+    X_test = data_test.drop(['Hazardous'],axis=1)
+    y_test = data_test['Hazardous']
+    return X_train, y_train, X_test, y_test
+
 def read_data_Asteroid():
     data = read_raw_data_Asteroid()
     data = data_cleaning(data)
@@ -105,4 +125,20 @@ def read_data_Asteroid():
     X_test = data_test.drop(['Hazardous'],axis=1)
     y_test = data_test['Hazardous']
     return X_train, y_train, X_test, y_test
+
+def read_data_Asteroid_SMOTE():
+    data = read_raw_data_Asteroid()
+    data = data_cleaning(data)
+    print(data.head())
+    #exit()
+    data = imbalance_smote(data)
+    data = normalization(data)
+    data = categorical(data)
+    data_train,data_test = train_test_split(data, test_size=0.2, random_state=42)
+    X_train = data_train.drop(['Hazardous'],axis=1)
+    y_train = data_train['Hazardous']
+    X_test = data_test.drop(['Hazardous'],axis=1)
+    y_test = data_test['Hazardous']
+    return X_train, y_train, X_test, y_test
+
 

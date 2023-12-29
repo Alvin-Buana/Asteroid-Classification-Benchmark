@@ -31,11 +31,18 @@ def categorical(data):
 def data_cleaning(data):
     data.dropna(axis=0,inplace=True)
     data.drop_duplicates(inplace=True)
-    columns = [ 'Date','Neo Reference ID','Name','Equinox','Close Approach Date','Epoch Date Close Approach', 
-                'Orbit Determination Date','Orbiting Body','Est Dia in KM(max)', 'Est Dia in M(min)', 'Est Dia in M(max)', 
-                'Est Dia in Miles(min)','Est Dia in Miles(max)', 'Est Dia in Feet(min)', 'Est Dia in Feet(max)',
-                'Relative Velocity km per hr', 'Miles per hour', 'Miss Dist.(lunar)','Miss Dist.(kilometers)', 'Miss Dist.(miles)']
-    data.drop(columns, axis = 1,inplace=True)
+    if 'Neo Reference ID' in data.columns:
+        columns = [ 'Date','Neo Reference ID','Name','Equinox','Close Approach Date','Epoch Date Close Approach', 
+                    'Orbit Determination Date','Orbiting Body','Est Dia in KM(max)', 'Est Dia in M(min)', 'Est Dia in M(max)', 
+                    'Est Dia in Miles(min)','Est Dia in Miles(max)', 'Est Dia in Feet(min)', 'Est Dia in Feet(max)',
+                    'Relative Velocity km per hr', 'Miles per hour', 'Miss Dist.(lunar)','Miss Dist.(kilometers)', 'Miss Dist.(miles)']
+        data.drop(columns, axis = 1,inplace=True)
+    else:
+        data.rename(columns={"pha":"Harzardous","neo":"is_near_earth"},inplace=True)
+        columns = ['name','prefix','diameter','albedo','diameter_sigma',
+                    'id','spkid','pdes','full_name','equinox']
+        data.drop(columns, axis = 1,inplace=True)
+    
     return data
 
 def imbalance_bootstrapping(data, n_samples):
@@ -55,6 +62,10 @@ def imbalance_smote(data):
     data['Hazardous'] = y_smote_train
     return data
 
+def read_raw_data_Asteroid():
+    path = dataset_path + datasets[0]
+    data = pd.read_csv("dataset.csv")
+    return data
 def read_raw_data_NeoWS():
     path = dataset_path + datasets[1]
     data1900_1950 = pd.read_csv(path+'/data_1900_1950_updated_December.csv',index_col=0).reset_index(drop=True)
@@ -67,6 +78,21 @@ def read_raw_data_NeoWS():
 
 def read_data_NeoWS():
     data = read_raw_data_NeoWS()
+    data = data_cleaning(data)
+    print(data.head())
+    #exit()
+    data = imbalance_bootstrapping(data,10000)
+    data = normalization(data)
+    data = categorical(data)
+    data_train,data_test = train_test_split(data, test_size=0.2, random_state=42)
+    X_train = data_train.drop(['Hazardous'],axis=1)
+    y_train = data_train['Hazardous']
+    X_test = data_test.drop(['Hazardous'],axis=1)
+    y_test = data_test['Hazardous']
+    return X_train, y_train, X_test, y_test
+
+def read_data_Asteroid():
+    data = read_raw_data_Asteroid()
     data = data_cleaning(data)
     print(data.head())
     #exit()

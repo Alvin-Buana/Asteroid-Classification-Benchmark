@@ -1,4 +1,6 @@
 # Models
+from sklearn.decomposition import PCA
+
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, StratifiedKFold
 from sklearn.neighbors import KNeighborsClassifier
@@ -35,6 +37,10 @@ def logistic_regression(X_train, y_train, X_test, y_test):
     return score, roc_score, time_total
 
 def knn(X_train, y_train, X_test, y_test):
+    if X_train.shape[1] >20:
+        pca = PCA(n_components = 5)
+        X_train = pca.fit_transform(X_train)
+        X_test = pca.transform(X_test)
     best_score ={}
     for k in range(2,10):
         knnclassifier = KNeighborsClassifier(n_neighbors=k)

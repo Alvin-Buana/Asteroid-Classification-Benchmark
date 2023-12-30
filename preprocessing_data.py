@@ -33,6 +33,7 @@ def data_cleaning(data):
     
     data.drop_duplicates(inplace=True)
     if 'Neo Reference ID' in data.columns:
+        print("Using NeoWS")
         data.dropna(axis=0,inplace=True)
         
         columns = [ 'Date','Neo Reference ID','Name','Equinox','Close Approach Date','Epoch Date Close Approach', 
@@ -50,9 +51,9 @@ def data_cleaning(data):
     return data
 
 def imbalance_bootstrapping(data, n_samples):
-    data_minority = data[data['Hazardous']=='Y']
-    data_majority = data[data['Hazardous']=='N']
-    # print(data_minority)
+    data_minority = data[data['Hazardous']=='Y' or data['Hazardous']==True]
+    data_majority = data[data['Hazardous']=='N' or data['Hazardous']==False]
+    print(data_minority)
     data_minority = resample(data_minority,random_state=42,n_samples=n_samples)
     data_majority = resample(data_majority,random_state=42,n_samples=n_samples)
     data = pd.concat([data_minority,data_majority],axis=0)

@@ -40,6 +40,7 @@ def data_cleaning(data):
                     'Orbit Determination Date','Orbiting Body','Est Dia in KM(max)', 'Est Dia in M(min)', 'Est Dia in M(max)', 
                     'Est Dia in Miles(min)','Est Dia in Miles(max)', 'Est Dia in Feet(min)', 'Est Dia in Feet(max)',
                     'Relative Velocity km per hr', 'Miles per hour', 'Miss Dist.(lunar)','Miss Dist.(kilometers)', 'Miss Dist.(miles)']
+        data['Hazardous'] = data['Hazardous'].map({True: 'Y', False: 'N'})
         data.drop(columns, axis = 1,inplace=True)
     else:
         data.rename(columns={"pha":"Hazardous","neo":"is_near_earth"},inplace=True)
@@ -51,8 +52,8 @@ def data_cleaning(data):
     return data
 
 def imbalance_bootstrapping(data, n_samples):
-    data_minority = data[data['Hazardous']=='Y' or data['Hazardous']==True]
-    data_majority = data[data['Hazardous']=='N' or data['Hazardous']==False]
+    data_minority = data[data['Hazardous']=='Y']
+    data_majority = data[data['Hazardous']=='N']
     print(data_minority)
     data_minority = resample(data_minority,random_state=42,n_samples=n_samples)
     data_majority = resample(data_majority,random_state=42,n_samples=n_samples)

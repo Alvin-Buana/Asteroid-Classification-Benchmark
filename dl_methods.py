@@ -27,17 +27,22 @@ lr = 0.0001
 def MLP(X_train, y_train, X_test, y_test):
     
     mlp = MLPClassifier(random_state=1, max_iter=300,activation='logistic')
+    start = time.time()
     mlp.fit(X_train,y_train)
+    stop = time.time()
     pred = mlp.predict(X_test)
     conmat = confusion_matrix(y_test,pred)
     score = f1_score(y_test,pred)
     roc_score = roc_auc_score(y_test,pred)
     print("F1-Score :",score)
-    print("ROC Score :",roc_score)
+    my_model_time=np.round((stop - start)/60, 2)
+    return score ,  my_model_time
 
-def DNN_model():
+    
+
+def DNN_model(X_train):
     model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Dense(128, input_dim=20,activation='relu'))
+    model.add(tf.keras.layers.Dense(128, input_dim=X_train.shape[1],activation='relu'))
     model.add(tf.keras.layers.Dense(64,activation='relu'))
     model.add(tf.keras.layers.Dense(32,activation='relu'))
     model.add(tf.keras.layers.Dense(8,activation='relu'))
@@ -90,7 +95,7 @@ def Conv3D(X_train):
     return model
 
 def DNN_training(X_train, y_train, X_test, y_test):
-    model = DNN_model()
+    model = DNN_model(X_train)
 
     print('Start to train')
     start = time.time()

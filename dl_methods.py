@@ -203,17 +203,15 @@ def LSTM_training():
     my_model_score = history.history['val_accuracy'][len(history.history['val_accuracy'])-1]
     vs.train_loss_plot(history)
 
-def deep_learning_method():
+def deep_learning_method(data,imbalance):
     print('Start to train with ML method')
     print('Start to read data')
-    X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
+    if data == "NeoWs":
+        X_train, y_train, X_test, y_test = dt.read_data_NeoWS(imbalance)
+    else:
+        X_train, y_train, X_test, y_test =dt.read_data_Asteroid(imbalance)
     X_train_dl = np.asarray(X_train).reshape((-1,1))
     X_test_dl = np.asarray(X_test).reshape((-1,1))
-    # data = X_train
-    # data['Hazardous'] = y_train
-    # data_train, data_val = train_test_split(data, test_size=0.15, random_state=42)
-    # X_train, y_train = data_train.drop('Hazardous',axis=1), data_train['Hazardous']
-    # X_val,y_val = data_val.drop('Hazardous',axis=1), data_val['Hazardous']
     f1_score_mlp,time_mlp = MLP(X_train, y_train, X_test, y_test)
     f1_score_dnn,time_dnn = DNN_training(X_train_dl, y_train, X_test_dl, y_test)
     f1_score_conv1d,time_conv1d = Conv_training(X_train_dl, y_train, X_test_dl, y_test,Conv1D)
@@ -225,5 +223,5 @@ def deep_learning_method():
      'Validation F1_score': [f1_score_mlp,f1_score_dnn,f1_score_conv1d,f1_score_conv2d,f1_score_conv3d],  
      'Training time': [time_mlp,time_dnn,time_conv1d,time_conv2d ,time_conv3d],
     })
-    filename = "Dl Methods"
+    filename = 'DL_'+data+'_'+imbalance+'_methods'
     valid_scores.to_csv(filename+'.csv', index=False)

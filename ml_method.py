@@ -194,33 +194,15 @@ def machine_learning_method(X_train, y_train, X_test, y_test,filename):
     valid_scores.to_csv(filename+'.csv', index=False)
     
 
-def main_processing():
+def main_processing(data,imbalance):
     print('Start to train with ML method')
     print('Start to read data')
-    # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
-    # print('Start to train')
-    # filename = 'ML_boot_methods'
-    # machine_learning_method(X_train, y_train, X_test, y_test,filename)
-    # print("ML methods with boostraping has finished")
-
-    # print("Starting SMOTE method")
-    # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
-    # filename = 'ML_smote_methods'
-    # machine_learning_method(X_train, y_train, X_test, y_test,filename)
-    # print("ML methods with SMOTE has finished")
-
-    print("Starting a new data called : Asteroid data")
-    X_train, y_train, X_test, y_test =dt.read_data_Asteroid()
-    print('Start to train')
-    filename = 'ML_Asteroid_boot_methods'
+    if data == "NeoWs":
+        X_train, y_train, X_test, y_test = dt.read_data_NeoWS(imbalance)
+    else:
+        X_train, y_train, X_test, y_test =dt.read_data_Asteroid(imbalance)
+    filename = 'ML_'+data+'_'+imbalance+'_methods'
     machine_learning_method(X_train, y_train, X_test, y_test,filename)
-    print("ML methods with boostraping has finished")
-
-    # print("Starting SMOTE method")
-    # X_train, y_train, X_test, y_test =dt.read_data_Asteroid_SMOTE()
-    # filename = 'ML_Asteroid_smote_methods'
-    # machine_learning_method(X_train, y_train, X_test, y_test,filename)
-    # print("ML methods with SMOTE has finished")
 
     print("Done")
     

@@ -83,12 +83,14 @@ def read_raw_data_NeoWS():
     data = pd.concat([data1900_1950,data1950_1953,data1953_2000,data2002_2022,data2022_present],axis=0)
     return data 
 
-def read_data_NeoWS():
+def read_data_NeoWS(imbalance='bootstrapping'):
     data = read_raw_data_NeoWS()
     data = data_cleaning(data)
-    print(data.head())
-    #exit()
-    data = imbalance_bootstrapping(data,10000)
+    if imbalance=='bootstrapping':
+        print("Using bootstrapping")
+        data = imbalance_bootstrapping(data,10000)
+    else: 
+        data = imbalance_smote(data)
     data = normalization(data)
     data = categorical(data)
     data_train,data_test = train_test_split(data, test_size=0.2, random_state=42)

@@ -11,3 +11,13 @@ def heatmap(data):
     plt.figure(figsize = (30,40))
     sns.heatmap(data.corr(),annot=True)
     plt.show()
+
+def train_loss_plot(history):
+    plt.figure(figsize=(20,4))
+    plt.subplot(1,2,1)
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.subplot(1,2,2)
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.show()

@@ -98,12 +98,13 @@ def read_data_NeoWS():
     y_test = data_test['Hazardous']
     return X_train, y_train, X_test, y_test
 
-def read_data_NeoWS_SMOTE():
-    data = read_raw_data_NeoWS()
+def read_data_Asteroid(imbalance='bootstrapping'):
+    data = read_raw_data_Asteroid()
     data = data_cleaning(data)
-    print(data.head())
-    #exit()
-    data = imbalance_smote(data)
+    if imbalance=='bootstrapping':
+        data = imbalance_bootstrapping(data,10000)
+    else: 
+        data = imbalance_smote(data)
     data = normalization(data)
     data = categorical(data)
     data_train,data_test = train_test_split(data, test_size=0.2, random_state=42)
@@ -113,34 +114,5 @@ def read_data_NeoWS_SMOTE():
     y_test = data_test['Hazardous']
     return X_train, y_train, X_test, y_test
 
-def read_data_Asteroid():
-    data = read_raw_data_Asteroid()
-    data = data_cleaning(data)
-    print(data.head())
-    #exit()
-    data = imbalance_bootstrapping(data,10000)
-    data = normalization(data)
-    data = categorical(data)
-    data_train,data_test = train_test_split(data, test_size=0.2, random_state=42)
-    X_train = data_train.drop(['Hazardous'],axis=1)
-    y_train = data_train['Hazardous']
-    X_test = data_test.drop(['Hazardous'],axis=1)
-    y_test = data_test['Hazardous']
-    return X_train, y_train, X_test, y_test
-
-def read_data_Asteroid_SMOTE():
-    data = read_raw_data_Asteroid()
-    data = data_cleaning(data)
-    print(data.head())
-    #exit()
-    data = imbalance_smote(data)
-    data = normalization(data)
-    data = categorical(data)
-    data_train,data_test = train_test_split(data, test_size=0.2, random_state=42)
-    X_train = data_train.drop(['Hazardous'],axis=1)
-    y_train = data_train['Hazardous']
-    X_test = data_test.drop(['Hazardous'],axis=1)
-    y_test = data_test['Hazardous']
-    return X_train, y_train, X_test, y_test
 
 

@@ -3,8 +3,11 @@ import dl_methods as dl
 
 
 def main(): 
-    # ml.main_processing() 
-    dl.main_processing()    
+    #ml.machine_learning_method()     
+    #dl.DNN_training()
+    #dl.MLP()
+    #dl.Conv3D_training()
+    dl.RNN_training()
     
   
 # __name__ 

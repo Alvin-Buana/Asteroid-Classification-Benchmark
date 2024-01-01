@@ -1,5 +1,5 @@
-ML_methods.csv
-ML_smote_methods.csv
+
+*csv
 /dataset
 /catboost_info
 __pycache__

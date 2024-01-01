@@ -42,7 +42,7 @@ def MLP(X_train, y_train, X_test, y_test):
 
 def DNN_model(X_train):
     model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Dense(128, input_dim=X_train.shape[1],activation='relu'))
+    model.add(tf.keras.layers.Dense(128, input_shape=X_train.shape[1],activation='relu'))
     model.add(tf.keras.layers.Dense(64,activation='relu'))
     model.add(tf.keras.layers.Dense(32,activation='relu'))
     model.add(tf.keras.layers.Dense(8,activation='relu'))
@@ -133,17 +133,18 @@ def main_processing():
     print('Start to train with ML method')
     print('Start to read data')
     X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
-    
+    X_train_dl = np.asarray(X_train).reshape((-1,1))
+    X_test_dl = np.asarray(X_test).reshape((-1,1))
     # data = X_train
     # data['Hazardous'] = y_train
     # data_train, data_val = train_test_split(data, test_size=0.15, random_state=42)
     # X_train, y_train = data_train.drop('Hazardous',axis=1), data_train['Hazardous']
     # X_val,y_val = data_val.drop('Hazardous',axis=1), data_val['Hazardous']
     f1_score_mlp,time_mlp = MLP(X_train, y_train, X_test, y_test)
-    f1_score_dnn,time_dnn = DNN_training(X_train, y_train, X_test, y_test)
-    f1_score_conv1d,time_conv1d = Conv_training(X_train, y_train, X_test, y_test,Conv1D)
-    f1_score_conv2d,time_conv2d = Conv_training(X_train, y_train, X_test, y_test,Conv2D)
-    f1_score_conv3d,time_conv3d = Conv_training(X_train, y_train, X_test, y_test,Conv3D)
+    f1_score_dnn,time_dnn = DNN_training(X_train_dl, y_train, X_test_dl, y_test)
+    f1_score_conv1d,time_conv1d = Conv_training(X_train_dl, y_train, X_test_dl, y_test,Conv1D)
+    f1_score_conv2d,time_conv2d = Conv_training(X_train_dl, y_train, X_test_dl, y_test,Conv2D)
+    f1_score_conv3d,time_conv3d = Conv_training(X_train_dl, y_train, X_test_dl, y_test,Conv3D)
 
     valid_scores=pd.DataFrame(
     {'Classifer':['Logistic Regression','KNN','SVC','Random Forest','LGBM','CatBoost','NaiveBayes'], 

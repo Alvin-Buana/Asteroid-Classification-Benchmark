@@ -5,10 +5,11 @@ import argparse
 
 def main(config): 
     # ml.main_processing(config['data'],config['balancing'])     
-    dl.DNN_training()
+    # dl.DNN_training()
     #dl.MLP()
-    #dl.Conv3D_training()
+    # dl.Conv1D_training()
     # dl.RNN_training()
+    dl.deep_learning_method(config['data'],config['balancing'])
     
   
 # __name__ 

@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 import numpy as np
+import pandas as pd
 
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.models import Sequential
@@ -9,7 +10,7 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import confusion_matrix,f1_score
+from sklearn.metrics import confusion_matrix,f1_score ,accuracy_score
 from sklearn.metrics import roc_auc_score
 
 import time
@@ -23,16 +24,17 @@ classes = 1
 epochs = 100
 lr = 0.0001
 
-def MLP():
-    X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
+def MLP(X_train, y_train, X_test, y_test):
+    # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
     mlp = MLPClassifier(random_state=1, max_iter=300,activation='logistic')
     mlp.fit(X_train,y_train)
     pred = mlp.predict(X_test)
     conmat = confusion_matrix(y_test,pred)
     score = f1_score(y_test,pred)
-    roc_score = roc_auc_score(y_test,pred)
+    accuracy = accuracy_score(y_test,pred)
     print("F1-Score :",score)
-    print("ROC Score :",roc_score)
+    print("Accuracy Score :",accuracy)
+    return score,accuracy
 
 def DNN_model():
     model = tf.keras.models.Sequential(name="model_DNN")
@@ -105,11 +107,22 @@ def LSTM(n_timesteps):
     model.compile(loss='binary_crossentropy', optimizer=opt,metrics=['accuracy'])
     return model
 
-def DNN_training():
+def evaluation_metrics(model,X_test,y_test):
+    pred = model.predict(X_test)
+    pred = np.where(pred>=0.5,1,0)
+    conmat = confusion_matrix(y_test,pred)
+    score = f1_score(y_test,pred)
+    accuracy = accuracy_score(y_test,pred)
+    print("F1-Score :",score)
+    print("Accuracy Score :",accuracy)
+    return score,accuracy
+    
+
+def DNN_training(X_train, y_train, X_test, y_test):
     model = DNN_model()
     print('Start to train with ML method')
     print('Start to read data')
-    X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
+    # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
     
     data = X_train
     data['Hazardous'] = y_train
@@ -119,17 +132,21 @@ def DNN_training():
     print('Start to train')
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val,y_val),shuffle=True)
     my_model_score = history.history['val_accuracy'][len(history.history['val_accuracy'])-1]
-    vs.train_loss_plot(history)
+    vs.train_loss_plot(history,"DNN")
+    return evaluation_metrics(model,X_test,y_test)
+    
 
-def Conv1D_training():
+
+def Conv1D_training(X_train, y_train, X_test, y_test):
     print('Start to train with ML method')
     print('Start to read data')
-    X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
+    # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
     data = X_train
     data['Hazardous'] = y_train
     data = data.values
     print(data.shape)
     data = np.reshape(data,(data.shape[0],data.shape[1],1))
+    X_test = X_test.reshape(X_test[0],X_test[1],1)
     print(data.shape)
     data_train, data_val = train_test_split(data, test_size=0.15, random_state=42)
     X_train, y_train = data_train[:,:20,:], data_train[:,20,:]
@@ -140,17 +157,20 @@ def Conv1D_training():
     model = Conv1D(n_timesteps,n_features)
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val,y_val),shuffle=True)
     my_model_score = history.history['val_accuracy'][len(history.history['val_accuracy'])-1]
-    vs.train_loss_plot(history)
+    vs.train_loss_plot(history,"Conv1D")
 
-def Conv2D_training():
+    return evaluation_metrics(model,X_test,y_test)
+
+def Conv2D_training(X_train, y_train, X_test, y_test):
     print('Start to train with ML method')
     print('Start to read data')
-    X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
+    # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
     data = X_train
     data['Hazardous'] = y_train
     data = data.values
     print(data.shape)
     data = np.reshape(data,(data.shape[0],data.shape[1],1,1))
+    X_test = np.array(X_test).reshape(X_test.shape[0],X_test.shape[1],1,1)
     print(data.shape)
     data_train, data_val = train_test_split(data, test_size=0.15, random_state=42)
     X_train, y_train = data_train[:,:20,:,:], data_train[:,20]
@@ -161,9 +181,10 @@ def Conv2D_training():
     model = Conv2D(n_features)
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val,y_val),shuffle=True)
     my_model_score = history.history['val_accuracy'][len(history.history['val_accuracy'])-1]
-    vs.train_loss_plot(history)
+    vs.train_loss_plot(history,"Conv2D")
+    return evaluation_metrics(model,X_test,y_test)
 
-def RNN_training():
+def RNN_training(X_train, y_train, X_test, y_test):
     print('Start to train with ML method')
     print('Start to read data')
     X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
@@ -172,6 +193,7 @@ def RNN_training():
     data = data.values
     print(data.shape)
     data = np.reshape(data,(data.shape[0],1,data.shape[1]))
+    X_test = np.array(X_test).reshape(X_test.shape[0],1,X_test.shape[1])
     print(data.shape)
     data_train, data_val = train_test_split(data, test_size=0.15, random_state=42)
     X_train, y_train = data_train[:,:,:20], data_train[:,:,20]
@@ -181,17 +203,19 @@ def RNN_training():
     model = RNN(n_timesteps)
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val,y_val),shuffle=True)
     my_model_score = history.history['val_accuracy'][len(history.history['val_accuracy'])-1]
-    vs.train_loss_plot(history)
+    vs.train_loss_plot(history,"RNN")
+    return evaluation_metrics(model,X_test,y_test)
 
-def LSTM_training():
+def LSTM_training(X_train, y_train, X_test, y_test):
     print('Start to train with ML method')
     print('Start to read data')
-    X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
+    # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
     data = X_train
     data['Hazardous'] = y_train
     data = data.values
     print(data.shape)
     data = np.reshape(data,(data.shape[0],1,data.shape[1]))
+    X_test = np.array(X_test).reshape(X_test.shape[0],1,X_test.shape[1])
     print(data.shape)
     data_train, data_val = train_test_split(data, test_size=0.15, random_state=42)
     X_train, y_train = data_train[:,:,:20], data_train[:,:,20]
@@ -201,7 +225,8 @@ def LSTM_training():
     model = LSTM(n_timesteps)
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val,y_val),shuffle=True)
     my_model_score = history.history['val_accuracy'][len(history.history['val_accuracy'])-1]
-    vs.train_loss_plot(history)
+    vs.train_loss_plot(history,"LSTM")
+    return evaluation_metrics(model,X_test,y_test)
 
 def deep_learning_method(data,imbalance):
     print('Start to train with ML method')
@@ -212,16 +237,17 @@ def deep_learning_method(data,imbalance):
         X_train, y_train, X_test, y_test =dt.read_data_Asteroid(imbalance)
     X_train_dl = np.asarray(X_train).reshape((-1,1))
     X_test_dl = np.asarray(X_test).reshape((-1,1))
-    f1_score_mlp,time_mlp = MLP(X_train, y_train, X_test, y_test)
-    f1_score_dnn,time_dnn = DNN_training(X_train_dl, y_train, X_test_dl, y_test)
-    f1_score_conv1d,time_conv1d = Conv_training(X_train_dl, y_train, X_test_dl, y_test,Conv1D)
-    f1_score_conv2d,time_conv2d = Conv_training(X_train_dl, y_train, X_test_dl, y_test,Conv2D)
-    f1_score_conv3d,time_conv3d = Conv_training(X_train_dl, y_train, X_test_dl, y_test,Conv3D)
+    print(X_train)
+    f1_score_mlp,accuracy_mlp = MLP(X_train, y_train, X_test, y_test)
+    f1_score_dnn,accuracy_dnn = DNN_training(X_train, y_train, X_test, y_test)
+    f1_score_conv2d,accuracy_conv2d = Conv2D_training(X_train, y_train, X_test, y_test)
+    f1_score_RNN,accuracy_RNN= RNN_training(X_train, y_train, X_test, y_test)
+    f1_score_LSTM,accuracy_LSTM = LSTM_training(X_train, y_train, X_test, y_test)
 
     valid_scores=pd.DataFrame(
-    {'Classifer':['Logistic Regression','KNN','SVC','Random Forest','LGBM','CatBoost','NaiveBayes'], 
-     'Validation F1_score': [f1_score_mlp,f1_score_dnn,f1_score_conv1d,f1_score_conv2d,f1_score_conv3d],  
-     'Training time': [time_mlp,time_dnn,time_conv1d,time_conv2d ,time_conv3d],
+    {'Classifer':['MLP','DNN','Conv2D','RNN','LSTM'], 
+     'Validation F1_score': [f1_score_mlp,f1_score_dnn,f1_score_conv2d,f1_score_RNN,f1_score_LSTM],  
+     'Training accuracy': [accuracy_mlp,accuracy_dnn,accuracy_conv2d,accuracy_RNN ,accuracy_LSTM],
     })
     filename = 'DL_'+data+'_'+imbalance+'_methods'
     valid_scores.to_csv(filename+'.csv', index=False)

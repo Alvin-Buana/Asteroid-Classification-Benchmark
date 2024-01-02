@@ -3,3 +3,5 @@
 /dataset
 /catboost_info
 __pycache__
+*.sh
+*.bat

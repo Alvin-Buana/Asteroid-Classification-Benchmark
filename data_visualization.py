@@ -12,7 +12,7 @@ def heatmap(data):
     sns.heatmap(data.corr(),annot=True)
     plt.show()
 
-def train_loss_plot(history):
+def train_loss_plot(history,name):
     plt.figure(figsize=(20,4))
     plt.subplot(1,2,1)
     plt.plot(history.history['accuracy'])
@@ -26,4 +26,4 @@ def train_loss_plot(history):
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.title("Loss Graph")
-    plt.show()
+    plt.savefig(name+".png")

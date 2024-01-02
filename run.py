@@ -4,11 +4,11 @@ import argparse
 
 
 def main(config): 
-    ml.main_processing(config['data'],config['balancing'])     
-    #dl.DNN_training(config['data'],config['balancing'])
-    #dl.MLP(config['data'],config['balancing'])
-    #dl.Conv3D_training(config['data'],config['balancing'])
-    dl.RNN_training()
+    # ml.main_processing(config['data'],config['balancing'])     
+    dl.DNN_training()
+    #dl.MLP()
+    #dl.Conv3D_training()
+    # dl.RNN_training()
     
   
 # __name__ 

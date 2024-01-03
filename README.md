@@ -35,7 +35,7 @@ There are two dataset in this project. Below is the description of the data
 The result of the project should create two Xslx file which first containing the machine learning model and the second should be the deep learning model. 
 The given picture will describe the result.
 
-![Image Result](image.png)
+![Image Result](image.jpg)
 
 
 ## Contributors

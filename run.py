@@ -4,7 +4,7 @@ import argparse
 
 
 def main(config): 
-    # ml.main_processing(config['data'],config['balancing'])     
+    ml.main_processing(config['data'],config['balancing'])     
     # dl.DNN_training()
     #dl.MLP()
     # dl.Conv1D_training()

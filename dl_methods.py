@@ -36,9 +36,9 @@ def MLP(X_train, y_train, X_test, y_test):
     print("Accuracy Score :",accuracy)
     return score,accuracy
 
-def DNN_model():
+def DNN_model(dim):
     model = tf.keras.models.Sequential(name="model_DNN")
-    model.add(tf.keras.layers.Dense(128, input_dim=20,activation='relu'))
+    model.add(tf.keras.layers.Dense(128, input_dim=dim,activation='relu'))
     model.add(tf.keras.layers.Dense(64,activation='relu'))
     model.add(tf.keras.layers.Dense(32,activation='relu'))
     model.add(tf.keras.layers.Dense(8,activation='relu'))
@@ -119,7 +119,7 @@ def evaluation_metrics(model,X_test,y_test):
     
 
 def DNN_training(X_train, y_train, X_test, y_test):
-    model = DNN_model()
+    model = DNN_model(X_train.shape[1])
     print('Start to train with ML method')
     print('Start to read data')
     # X_train, y_train, X_test, y_test = dt.read_data_NeoWS()
@@ -173,11 +173,15 @@ def Conv2D_training(X_train, y_train, X_test, y_test):
     X_test = np.array(X_test).reshape(X_test.shape[0],X_test.shape[1],1,1)
     print(data.shape)
     data_train, data_val = train_test_split(data, test_size=0.15, random_state=42)
-    X_train, y_train = data_train[:,:20,:,:], data_train[:,20]
+    size = X_train.shape[1]-1
+    X_train, y_train = data_train[:,:size,:,:], data_train[:,size]
+    print(X_train.shape)
     print(y_train.shape)
-    X_val,y_val = data_val[:,:20,:,:], data_val[:,20]
+    X_val,y_val = data_val[:,:size,:,:], data_val[:,size]
+    print(X_val.shape)
+    print(y_val.shape)
     print('Start to train')
-    n_features = 20
+    n_features = X_train.shape[1]
     model = Conv2D(n_features)
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val,y_val),shuffle=True)
     my_model_score = history.history['val_accuracy'][len(history.history['val_accuracy'])-1]
@@ -194,12 +198,16 @@ def RNN_training(X_train, y_train, X_test, y_test):
     print(data.shape)
     data = np.reshape(data,(data.shape[0],1,data.shape[1]))
     X_test = np.array(X_test).reshape(X_test.shape[0],1,X_test.shape[1])
-    print(data.shape)
+    
     data_train, data_val = train_test_split(data, test_size=0.15, random_state=42)
-    X_train, y_train = data_train[:,:,:20], data_train[:,:,20]
-    X_val,y_val = data_val[:,:,:20], data_val[:,:,20]
+    size =X_train.shape[1]-1
+    
+    X_train, y_train = data_train[:,:,:size], data_train[:,:,size]
+    X_val,y_val = data_val[:,:,:size], data_val[:,:,size]
+    print(X_train.shape)
+    print(X_val.shape)
     print('Start to train')
-    n_timesteps = 20
+    n_timesteps = size
     model = RNN(n_timesteps)
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val,y_val),shuffle=True)
     my_model_score = history.history['val_accuracy'][len(history.history['val_accuracy'])-1]
@@ -218,10 +226,14 @@ def LSTM_training(X_train, y_train, X_test, y_test):
     X_test = np.array(X_test).reshape(X_test.shape[0],1,X_test.shape[1])
     print(data.shape)
     data_train, data_val = train_test_split(data, test_size=0.15, random_state=42)
-    X_train, y_train = data_train[:,:,:20], data_train[:,:,20]
-    X_val,y_val = data_val[:,:,:20], data_val[:,:,20]
+    size =X_train.shape[1]-1
+    
+    X_train, y_train = data_train[:,:,:size], data_train[:,:,size]
+    X_val,y_val = data_val[:,:,:size], data_val[:,:,size]
+    print(X_train.shape)
+    print(X_val.shape)
     print('Start to train')
-    n_timesteps = 20
+    n_timesteps = size
     model = LSTM(n_timesteps)
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val,y_val),shuffle=True)
     my_model_score = history.history['val_accuracy'][len(history.history['val_accuracy'])-1]

@@ -18,16 +18,16 @@ There are two dataset in this project. Below is the description of the data
 
 3. For running the project with NeoWs dataset. please run the given code below on the terminal.
 ```powershell
-.\run.py  -d "NEOws"
+python .\run.py  -d "NEOws"
 ```
 4. For running the project with Asteroid dataset. please run the given code below on the terminal.
 ```powershell
-.\run.py  -d "Asteroids"
+python .\run.py  -d "Asteroids"
 ```
 
 5.  the given data is actually imbalanced, we put two technique on this project which are **Bootstrapping** and **SMOTE**. if you would like to SMOTE you would have to add another paramater as below :
 ```powershell
-.\run.py  -d "NEOws" -b "SMOTE"
+python .\run.py  -d "NEOws" -b "SMOTE"
 ```
 
 ## Result

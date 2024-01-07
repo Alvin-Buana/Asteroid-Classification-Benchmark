@@ -15,17 +15,22 @@ There are two dataset in this project. Below is the description of the data
 1. Download the dataset that has been given on the "Dataset" section
 
 2. Download the project and extract it to your desired folder
+3. Please put the all dataset on the project in a folder called "dataset". in the "dataset" folder, for NeoWs dataset please create a folder inside the "dataset" folder called "NeoWS" and put all of the NeoWs data inside of the folder. For Asteroid Data, please create a folder inside the "dataset" folder called "Asteroids" and put all of the Asteroid data inside of the folder the image below will describe the result.
 
-3. For running the project with NeoWs dataset. please run the given code below on the terminal.
+
+   ![image](https://github.com/Alvin-Buana/Asteroid-Classification-Benchmark/assets/82896196/3a4a5af1-8a5b-4a33-8ffb-9bad20a5432b)
+
+
+4. For running the project with NeoWs dataset. please run the given code below on the terminal.
 ```powershell
 python .\run.py  -d "NEOws"
 ```
-4. For running the project with Asteroid dataset. please run the given code below on the terminal.
+5. For running the project with Asteroid dataset. please run the given code below on the terminal.
 ```powershell
 python .\run.py  -d "Asteroids"
 ```
 
-5.  the given data is actually imbalanced, we put two technique on this project which are **Bootstrapping** and **SMOTE**. if you would like to SMOTE you would have to add another paramater as below :
+6.  the given data is actually imbalanced, we put two technique on this project which are **Bootstrapping** and **SMOTE**. if you would like to SMOTE you would have to add another paramater as below :
 ```powershell
 python .\run.py  -d "NEOws" -b "SMOTE"
 ```

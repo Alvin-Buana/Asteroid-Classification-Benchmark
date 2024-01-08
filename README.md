@@ -1,4 +1,4 @@
-# Asteroid-Classification-Benchmark
+# Asteroid-Classification
 
 ## Introduction
 
